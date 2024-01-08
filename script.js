@@ -65,6 +65,7 @@ function handleCardClick(event) {
         clickedCards = [];
         score += 1;
         updateScoreDisplay();
+        winCondition();
     } else {
         setTimeout(function() {
           clickedCards[0].element.style.backgroundColor = "";
@@ -83,27 +84,50 @@ function updateScoreDisplay() {
 }
 
 function initGame() { 
-  const startButton = document.createElement("button");
-  scoreElement = document.createElement("div");
-  let isgameStarted = false;
+  let startRestartButton = document.getElementById("startRestartButton");
+  if (!startRestartButton) {
+    startRestartButton = document.createElement("button");
+    startRestartButton.id = "startRestartButton";
+    document.body.insertBefore(startRestartButton, gameContainer);
+  }
+  startRestartButton.textContent = "Start Game !";
 
-  startButton.textContent = "Start Game !";
-  scoreElement.textContent = "Score : " + score.toString();
+  if (!scoreElement) {
+    scoreElement = document.createElement("div");
+    document.body.insertBefore(scoreElement, gameContainer.nextSibling);
+  }
 
-  startButton.addEventListener("click", () => {
+  startRestartButton.addEventListener("click", () => {
+    startGame();
+  });
+}
+
+function startGame() {
+  gameContainer.innerHTML = "";
+  countClick = 0;
+  clickedCards = [];
+  score = 0;
+  updateScoreDisplay();
+  shuffledColors = shuffle(COLORS);
+  createDivsForColors(shuffledColors);
+  document.getElementById("startRestartButton").textContent = "Restart Game !";
+}
+
+function winCondition() {
+  let totalPairs = COLORS.length / 2;
+
+  if (score === totalPairs) {
     gameContainer.innerHTML = "";
-    isgameStarted = true;
-    countClick = 0;
-    clickedCards = [];
-    score = 0;
-    updateScoreDisplay();
-    shuffledColors = shuffle(COLORS);
-    createDivsForColors(shuffledColors);
-    if (isgameStarted === true)
-      startButton.textContent = "Restart Game !";
-  })
-  document.body.appendChild(startButton);
-  document.body.appendChild(scoreElement);
+    const winMessage = document.createElement("div");
+    winMessage.textContent = "You Win !!! Score = " + score;
+    gameContainer.appendChild(winMessage);
+
+    startRestartButton.textContent = "Restart Game!";
+    startRestartButton.addEventListener("click", function() {
+      startGame();
+    });
+    gameContainer.appendChild(startRestartButton);
+  }
 }
 
 initGame();

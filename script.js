@@ -83,12 +83,24 @@ function updateScoreDisplay() {
 
 }
 
+function restartGame() {
+  gameContainer.innerHTML = "";
+  countClick = 0;
+  clickedCards = [];
+  score = 0;
+  updateScoreDisplay();
+  shuffledColors = shuffle(COLORS);
+  createDivsForColors(shuffledColors);
+  document.getElementById("startRestartButton").textContent = "Restart Game !";
+}
+
 function initGame() { 
   let startRestartButton = document.getElementById("startRestartButton");
   if (!startRestartButton) {
     startRestartButton = document.createElement("button");
     startRestartButton.id = "startRestartButton";
     document.body.insertBefore(startRestartButton, gameContainer);
+    startRestartButton.addEventListener("click", restartGame);
   }
   startRestartButton.textContent = "Start Game !";
 
@@ -103,30 +115,21 @@ function initGame() {
 }
 
 function startGame() {
-  gameContainer.innerHTML = "";
-  countClick = 0;
-  clickedCards = [];
-  score = 0;
-  updateScoreDisplay();
-  shuffledColors = shuffle(COLORS);
-  createDivsForColors(shuffledColors);
-  document.getElementById("startRestartButton").textContent = "Restart Game !";
+  restartGame();
 }
 
 function winCondition() {
   let totalPairs = COLORS.length / 2;
 
   if (score === totalPairs) {
-    gameContainer.innerHTML = "";
     const winMessage = document.createElement("div");
     winMessage.textContent = "You Win !!! Score = " + score;
+    while (gameContainer.firstChild) {
+      gameContainer.removeChild(gameContainer.lastChild);
+    }
     gameContainer.appendChild(winMessage);
-
+    let startRestartButton = document.getElementById("startRestartButton");
     startRestartButton.textContent = "Restart Game!";
-    startRestartButton.addEventListener("click", function() {
-      startGame();
-    });
-    gameContainer.appendChild(startRestartButton);
   }
 }
 
